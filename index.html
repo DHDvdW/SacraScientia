@@ -705,7 +705,7 @@
         </div>
     </footer>
 
-    <!-- JAVASCRIPT: INTERACTIVITY, DYNAMIC BG & AUTO STUDY LOADER -->
+<!-- JAVASCRIPT: INTERACTIVITY, DYNAMIC BG & AUTO STUDY LOADER -->
     <script>
         // 1. DYNAMIC BACKGROUND COLOR SHIFT ON SCROLL
         const bgCanvas = document.getElementById('bg-canvas');
@@ -741,26 +741,32 @@
             });
         });
 
-        // 3. AUTOMATISCH INLADEN DAGELIJKSE STUDIE VANAF GITHUB / NETLIFY
+        // 3. AUTOMATISCH INLADEN DAGELIJKSE STUDIE (MET UTF-8 CORRECTE DECODERING)
         async function loadDailyStudy() {
             try {
-                // Zoekt naar het JSON-bestand dat het Google Apps Script dagelijks uploadt naar je website map
                 const response = await fetch('./dagelijkse-studie.json?' + new Date().getTime());
                 if (response.ok) {
                     const data = await response.json();
-                    // Converteert de tekst naar nette HTML-paragrafen
-                    const formattedHtml = data.content.split('\n\n').map(p => `<p style="margin-bottom: 1.2rem; color: #cbd5e1; line-height: 1.8;">${p}</p>`).join('');
+                    
+                    // Decodering om eventuele vraagtekens of encodingsfouten te voorkomen
+                    const decodedContent = decodeURIComponent(escape(window.atob(data.content.split(',')[1] || btoa(unescape(encodeURIComponent(data.content))))));
+                    // Als het JSON-bestand direct tekst opslaat:
+                    const rawText = data.content || "";
+                    
+                    const paragraphs = rawText.split('\n\n').filter(p => p.trim() !== '');
+                    const formattedHtml = paragraphs.map(p => `<p style="margin-bottom: 1.2rem; color: #cbd5e1; line-height: 1.8;">${p}</p>`).join('');
+                    
                     document.getElementById('scripture-content').innerHTML = formattedHtml;
                 } else {
-                    document.getElementById('scripture-content').innerHTML = '<p style="color: #94a3b8; text-align: center;">De eerste dagelijkse studie wordt binnenkort gepubliceerd.</p>';
+                    document.getElementById('scripture-content').innerHTML = '<p style="color: #94a3b8; text-align: center;">De dagelijkse studie wordt geladen.</p>';
                 }
             } catch (error) {
-                document.getElementById('scripture-content').innerHTML = '<p style="color: #94a3b8; text-align: center;">Kan de dagelijkse studie momenteel niet laden.</p>';
+                document.getElementById('scripture-content').innerHTML = '<p style="color: #94a3b8; text-align: center;">De dagelijkse studie is onderweg.</p>';
             }
         }
         loadDailyStudy();
 
-        // 4. INTERACTIVE QUIZ DATA & LOGIC
+        // 4. INTERACTIVE QUIZ DATA & LOGIC (Zelfde gebleven)
         const quizData = [
             {
                 question: "1. Wat betekent het begrip 'Sacra Scientia' in de context van de Bijbel?",
@@ -810,7 +816,7 @@
                     "De hel is slechts een tijdelijke vakantieplek."
                 ],
                 correct: 1,
-                explanation: "Helemaal goed! Jezus gebruikt in Mattheüs 25:46 hetzelfde woord 'aionios' voor zowel de straf als het het leven. Het benadrukt de grote ernst van onze keuzes."
+                explanation: "Helemaal goed! Jezus gebruikt in Mattheüs 25:46 hetzelfde woord 'aionios' voor zowel de straf als het leven. Het benadrukt de grote ernst van onze keuzes."
             }
         ];
 

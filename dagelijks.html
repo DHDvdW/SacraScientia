@@ -61,25 +61,13 @@
         }
 
         .study-date { font-size: 0.85rem; color: var(--accent); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; margin-bottom: 1.5rem; }
-        .study-article h2 { font-size: 1.8rem; margin-bottom: 1.5rem; color: #fff; border-bottom: 1px solid var(--border-color); padding-bottom: 0.8rem; }
         .study-article p { margin-bottom: 1.5rem; color: #cbd5e1; text-align: justify; }
 
-        /* Professionele Quiz Opmaak */
         .quiz-section {
             background: rgba(11, 15, 25, 0.95); border: 1px solid rgba(217, 119, 6, 0.4);
             border-radius: 10px; padding: 2.5rem; margin-top: 3.5rem;
         }
         .quiz-section h3 { color: var(--accent); margin-bottom: 1.5rem; font-size: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
-        .quiz-question-item { margin-bottom: 1.8rem; }
-        .quiz-question-item p { font-weight: 600; color: #fff; margin-bottom: 0.8rem; text-align: left !important; }
-        .quiz-options-list { display: flex; flex-direction: column; gap: 0.6rem; list-style: none; }
-        .quiz-options-list li {
-            background: rgba(30, 41, 59, 0.5); border: 1px solid var(--border-color);
-            padding: 0.8rem 1.2rem; border-radius: 6px; cursor: pointer; transition: all 0.2s;
-            font-size: 0.95rem; color: var(--text-main);
-        }
-        .quiz-options-list li:hover { background: rgba(217, 119, 6, 0.15); border-color: var(--accent); }
-        .quiz-options-list li.selected { background: rgba(217, 119, 6, 0.3); border-color: var(--accent); font-weight: 600; }
 
         .btn-download {
             background: var(--accent); color: #0b0f19; border: none;
@@ -148,10 +136,8 @@
                 const studyRes = await fetch(latestFile.download_url);
                 const data = await studyRes.json();
                 
-                // Opmaak van de hoofdtekst
                 const textHtml = data.text ? data.text.split('\n').map(p => `<p>${p}</p>`).join('') : '<p>Geen tekst gevonden.</p>';
                 
-                // Quiz opbouwen als strakke component als deze aanwezig is
                 let quizHtml = "";
                 if (data.quiz) {
                     quizHtml = `
@@ -176,7 +162,6 @@
                     </article>
                 `;
 
-                // Beveiligde event listener voor de PDF-knop
                 document.getElementById('pdf-btn').addEventListener('click', () => {
                     generatePDF(data.date || 'studie', data.text || '', data.quiz || '', data.answers || 'Geen antwoorden beschikbaar');
                 });
@@ -196,68 +181,70 @@
                 const margin = 15;
                 const pageWidth = 210;
                 const contentWidth = pageWidth - (margin * 2);
+                const lineHeight = 6.5;
 
-                // Titel & Datum
-                doc.setFont("Helvetica", "bold");
+                // --- PAGINA 1: HOOFDTEKST ---
+                doc.setFont("Times", "bold");
                 doc.setFontSize(16);
-                doc.setTextColor(217, 119, 6); // Accentkleur
-                doc.text("Sacra Scientia - Schriftstudie", margin, y);
+                doc.setTextColor(180, 83, 9);
+                doc.text("Sacra Scientia — Schriftstudie", margin, y);
                 
-                doc.setFont("Helvetica", "normal");
+                doc.setFont("Times", "italic");
                 doc.setFontSize(10);
                 doc.setTextColor(100);
-                doc.text("Datum: " + date, margin, y + 6);
-                y += 15;
+                doc.text("Gepubliceerd op: " + date, margin, y + 6);
+                y += 18;
 
-                // Hoofdtekst
                 doc.setFont("Times", "normal");
                 doc.setFontSize(11);
                 doc.setTextColor(30);
+                
                 const splitText = doc.splitTextToSize(text, contentWidth);
                 
                 for (let i = 0; i < splitText.length; i++) {
-                    if (y > 275) {
+                    if (y > 270) {
                         doc.addPage();
                         y = 20;
                     }
                     doc.text(splitText[i], margin, y);
-                    y += 6;
+                    y += lineHeight;
                 }
 
-                // Quiz sectie op nieuwe pagina als deze er is
+                // --- PAGINA 2: QUIZ & SPIEGELBEELD ANTWOORDEN ---
                 if (quiz) {
                     doc.addPage();
                     y = 20;
-                    doc.setFont("Helvetica", "bold");
+                    
+                    doc.setFont("Times", "bold");
                     doc.setFontSize(14);
-                    doc.setTextColor(217, 119, 6);
+                    doc.setTextColor(180, 83, 9);
                     doc.text("Inzichtvragen", margin, y);
                     y += 10;
 
                     doc.setFont("Times", "normal");
                     doc.setFontSize(11);
                     doc.setTextColor(30);
+                    
                     const splitQuiz = doc.splitTextToSize(quiz, contentWidth);
-
                     for (let i = 0; i < splitQuiz.length; i++) {
-                        if (y > 275) {
+                        if (y > 250) {
                             doc.addPage();
                             y = 20;
                         }
                         doc.text(splitQuiz[i], margin, y);
-                        y += 6;
+                        y += lineHeight;
                     }
                 }
 
-                // Antwoorden in spiegelbeeld onderaan de pagina
-                doc.setFont("Helvetica", "bold");
+                // Antwoorden in spiegelbeeld strak en uniform onderaan de pagina
+                doc.setFont("Times", "bold");
                 doc.setFontSize(9);
-                doc.setTextColor(150);
-                doc.text("--- ANTWOORDEN (DRAAI DE PAGINA OM) ---", pageWidth / 2, 265, { align: 'center' });
+                doc.setTextColor(120);
+                doc.text("--- ANTWOORDEN (DRAAI DE PAGINA OM) ---", pageWidth / 2, 262, { align: 'center' });
                 
-                doc.setFont("Helvetica", "normal");
-                doc.setFontSize(8);
-                doc.text(doc.splitTextToSize("Antwoorden: \n" + answers, contentWidth), pageWidth / 2, 275, { align: 'center', angle: 180 });
+                doc.setFont("Times", "normal");
+                doc.setFontSize(9);
+                doc.text(doc.splitTextToSize("Antwoorden: \n" + answers, contentWidth), pageWidth / 2, 272, { align: 'center', angle: 180 });
 
                 doc.save(`Studie_${date}.pdf`);
             } catch (err) {

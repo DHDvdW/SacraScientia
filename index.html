@@ -474,7 +474,8 @@
             <span>Sacra Scientia</span>
         </a>
         <ul class="nav-links">
-            <li><a href="#dagelijks-woord" style="color: #f59e0b; font-weight: 700;">Dagelijkse Studie</a></li>
+            <li><a href="studies.html" style="color: #f59e0b; font-weight: 700;">Eerdere Studies</a></li>
+            <li><a href="#dagelijks-woord">Dagelijks Woord</a></li>
             <li><a href="#oorsprong">Oorsprong</a></li>
             <li><a href="#de-val">De Illusie</a></li>
             <li><a href="#smeltoven">De Redder</a></li>
@@ -491,6 +492,7 @@
         <p>In een drukke wereld vol afleiding zoeken we allemaal naar rust, betekenis en de overwinning op de dood. Is het leven een toevalstreffer, of is jouw ziel geschapen voor een eeuwig doel?</p>
         <div class="btn-group">
             <a href="#dagelijks-woord" class="btn-primary">Lees de Dagelijkse Studie</a>
+            <a href="studies.html" class="btn-secondary">Bekijk Archief</a>
             <a href="#quiz" class="btn-secondary">Test jouw inzicht</a>
         </div>
     </header>
@@ -705,7 +707,7 @@
         </div>
     </footer>
 
-<!-- JAVASCRIPT: INTERACTIVITY, DYNAMIC BG & AUTO STUDY LOADER -->
+    <!-- JAVASCRIPT: INTERACTIVITY, DYNAMIC BG & AUTO STUDY LOADER -->
     <script>
         // 1. DYNAMIC BACKGROUND COLOR SHIFT ON SCROLL
         const bgCanvas = document.getElementById('bg-canvas');
@@ -741,32 +743,43 @@
             });
         });
 
-        // 3. AUTOMATISCH INLADEN DAGELIJKSE STUDIE (MET UTF-8 CORRECTE DECODERING)
+        // 3. AUTOMATISCH INLADEN DAGELIJKSE STUDIE (CORRECT DECODED)
         async function loadDailyStudy() {
             try {
                 const response = await fetch('./dagelijkse-studie.json?' + new Date().getTime());
                 if (response.ok) {
                     const data = await response.json();
                     
-                    // Decodering om eventuele vraagtekens of encodingsfouten te voorkomen
-                    const decodedContent = decodeURIComponent(escape(window.atob(data.content.split(',')[1] || btoa(unescape(encodeURIComponent(data.content))))));
-                    // Als het JSON-bestand direct tekst opslaat:
-                    const rawText = data.content || "";
-                    
-                    const paragraphs = rawText.split('\n\n').filter(p => p.trim() !== '');
-                    const formattedHtml = paragraphs.map(p => `<p style="margin-bottom: 1.2rem; color: #cbd5e1; line-height: 1.8;">${p}</p>`).join('');
-                    
-                    document.getElementById('scripture-content').innerHTML = formattedHtml;
+                    let rawText = "";
+                    if (data.text) {
+                        rawText = data.text;
+                    } else if (data.content) {
+                        try {
+                            const binString = atob(data.content);
+                            const bytes = Uint8Array.from(binString, (m) => m.codePointAt(0));
+                            rawText = new TextDecoder().decode(bytes);
+                        } catch (e) {
+                            rawText = data.content;
+                        }
+                    }
+
+                    if (rawText.trim() !== "") {
+                        const paragraphs = rawText.split('\n').filter(p => p.trim() !== '');
+                        const formattedHtml = paragraphs.map(p => `<p style="margin-bottom: 1.2rem; color: #cbd5e1; line-height: 1.8;">${p}</p>`).join('');
+                        document.getElementById('scripture-content').innerHTML = formattedHtml;
+                    } else {
+                        document.getElementById('scripture-content').innerHTML = '<p style="color: #94a3b8; text-align: center;">De dagelijkse studie is momenteel leeg.</p>';
+                    }
                 } else {
                     document.getElementById('scripture-content').innerHTML = '<p style="color: #94a3b8; text-align: center;">De dagelijkse studie wordt geladen.</p>';
                 }
             } catch (error) {
-                document.getElementById('scripture-content').innerHTML = '<p style="color: #94a3b8; text-align: center;">De dagelijkse studie is onderweg.</p>';
+                document.getElementById('scripture-content').innerHTML = '<p style="color: #94a3b8; text-align: center;">Kan de dagelijkse studie momenteel niet laden.</p>';
             }
         }
         loadDailyStudy();
 
-        // 4. INTERACTIVE QUIZ DATA & LOGIC (Zelfde gebleven)
+        // 4. INTERACTIVE QUIZ DATA & LOGIC
         const quizData = [
             {
                 question: "1. Wat betekent het begrip 'Sacra Scientia' in de context van de Bijbel?",

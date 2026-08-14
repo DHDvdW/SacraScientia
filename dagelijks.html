@@ -48,7 +48,7 @@
         .logo-icon { width: 24px; height: 24px; background: var(--accent); clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); }
 
         .nav-links { display: flex; gap: 2rem; list-style: none; align-items: center; }
-        .nav-links a { color: var(--text-muted); text-decoration: none; font-size: 0.95rem; font-weight: 500; }
+        .nav-links a { color: var(--text-muted); text-decoration: none; font-size: 0.95rem; font-weight: 500; transition: color 0.3s; }
         .nav-links a:hover, .nav-links a.active { color: var(--accent); }
 
         .container { max-width: 850px; margin: 0 auto; padding: 4rem 1.5rem; }
@@ -113,68 +113,85 @@
     </footer>
 
     <script>
-        const { jsPDF } = window.jspdf;
-
         async function loadDailyStudyPage() {
+            const container = document.getElementById('daily-content');
             try {
-                // Haalt het meest recente JSON-bestand op of de directe dagstudie
                 const repo = "DHDvdW/SacraScientia"; 
-                const res = await fetch(`https://api.github.com/repos/${repo}/contents/studies`);
+                const res = await fetch(`https://api.github.com/repos/${repo}/contents/studies?` + new Date().getTime());
+                
+                if (!res.ok) {
+                    throw new Error("Kan de map 'studies' op GitHub niet bereiken.");
+                }
+                
                 const files = await res.json();
                 files.sort((a, b) => b.name.localeCompare(a.name));
 
-                if (files.length > 0) {
-                    // Pak de nieuwste studie
-                    const latestFile = files.find(f => f.name.endsWith('.json'));
-                    if (latestFile) {
-                        const studyRes = await fetch(latestFile.download_url);
-                        const data = await studyRes.json();
-                        
-                        const textHtml = data.text ? data.text.split('\n').map(p => `<p>${p}</p>`).join('') : '<p>Geen tekst gevonden.</p>';
-                        const quizHtml = data.quiz ? `<div class="quiz-section"><h3>Inzichtquiz</h3><p style="white-space: pre-line; color: #cbd5e1;">${data.quiz}</p></div>` : '';
-
-                        const safeText = (data.text || "").replace(/`/g, '\\`');
-                        const safeQuiz = (data.quiz || "").replace(/`/g, '\\`');
-                        const safeAnswers = (data.answers || "Geen antwoorden").replace(/`/g, '\\`');
-
-                        document.getElementById('daily-content').innerHTML = `
-                            <article class="study-article">
-                                <div class="study-date">Gepubliceerd op: ${data.date}</div>
-                                ${textHtml}
-                                ${quizHtml}
-                                <button class="btn-download" onclick="downloadPDF('${data.date}', \`${safeText}\`, \`${safeQuiz}\`, \`${safeAnswers}\`)">Download als PDF (inclusief quiz & spiegel-antwoorden)</button>
-                            </article>
-                        `;
-                    }
+                const latestFile = files.find(f => f.name.endsWith('.json'));
+                if (!latestFile) {
+                    container.innerHTML = '<p style="text-align: center; color: var(--text-muted);">Er zijn nog geen studies gepubliceerd in het archief.</p>';
+                    return;
                 }
+
+                const studyRes = await fetch(latestFile.download_url);
+                const data = await studyRes.json();
+                
+                const textHtml = data.text ? data.text.split('\n').map(p => `<p>${p}</p>`).join('') : '<p>Geen tekst gevonden.</p>';
+                const quizHtml = data.quiz ? `
+                    <div class="quiz-section">
+                        <h3>Inzichtquiz</h3>
+                        <p style="white-space: pre-line; color: #cbd5e1; line-height: 1.8;">${data.quiz}</p>
+                    </div>` : '';
+
+                container.innerHTML = `
+                    <article class="study-article">
+                        <div class="study-date">Gepubliceerd op: ${data.date || 'Onbekend'}</div>
+                        ${textHtml}
+                        ${quizHtml}
+                        <button class="btn-download" id="pdf-btn">Download als PDF (inclusief quiz & spiegel-antwoorden)</button>
+                    </article>
+                `;
+
+                // Beveiligde event listener voor de PDF-knop
+                document.getElementById('pdf-btn').addEventListener('click', () => {
+                    generatePDF(data.date || 'studie', data.text || '', data.quiz || '', data.answers || 'Geen antwoorden beschikbaar');
+                });
+
             } catch (e) {
-                document.getElementById('daily-content').innerHTML = '<p style="text-align: center; color: var(--text-muted);">De studie voor vandaag kon niet worden geladen. Probeer het later nog eens.</p>';
+                console.error(e);
+                container.innerHTML = '<p style="text-align: center; color: var(--text-muted);">De studie voor vandaag kon niet worden geladen. Controleer of de map "studies" op GitHub bestaat.</p>';
             }
         }
 
-        function downloadPDF(date, text, quiz, answers) {
-            const doc = new jsPDF();
-            doc.setFontSize(16);
-            doc.text("Sacra Scientia - Schriftstudie (" + date + ")", 10, 15);
-            
-            doc.setFontSize(10);
-            doc.text(doc.splitTextToSize(text, 180), 10, 25);
-            
-            if (quiz) {
-                doc.addPage();
-                doc.setFontSize(14);
-                doc.text("Inzichtvragen", 10, 20);
+        function generatePDF(date, text, quiz, answers) {
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                doc.setFontSize(16);
+                doc.text("Sacra Scientia - Schriftstudie (" + date + ")", 10, 15);
+                
                 doc.setFontSize(10);
-                doc.text(doc.splitTextToSize(quiz, 180), 10, 30);
+                const splitText = doc.splitTextToSize(text, 180);
+                doc.text(splitText, 10, 25);
+                
+                if (quiz) {
+                    doc.addPage();
+                    doc.setFontSize(14);
+                    doc.text("Inzichtvragen", 10, 20);
+                    doc.setFontSize(10);
+                    doc.text(doc.splitTextToSize(quiz, 180), 10, 30);
+                }
+
+                // Antwoorden in spiegelbeeld onderaan
+                doc.setFontSize(8);
+                doc.setTextColor(150);
+                doc.text("--- ANTWOORDEN (DRAAI DE PAGINA OM) ---", 105, 270, { align: 'center' });
+                doc.text(doc.splitTextToSize(answers, 180), 105, 280, { align: 'center', angle: 180 });
+
+                doc.save(`Studie_${date}.pdf`);
+            } catch (err) {
+                alert("Fout bij genereren PDF: " + err.message);
             }
-
-            // Antwoorden in spiegelbeeld onderaan
-            doc.setFontSize(8);
-            doc.setTextColor(150);
-            doc.text("--- ANTWOORDEN (DRAAI DE PAGINA OM) ---", 105, 270, { align: 'center' });
-            doc.text(doc.splitTextToSize(answers, 180), 105, 280, { align: 'center', angle: 180 });
-
-            doc.save(`Studie_${date}.pdf`);
         }
 
         loadDailyStudyPage();

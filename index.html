@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ontdek de Waarheid over God, Jouw Ziel en de Voleinding | Het Evangelie Uitgelegd</title>
+    <meta name="description" content="Zoek je de betekenis van het leven, antwoorden op lijden en de waarheid over God? Ontdek hoe Gods rechtvaardigheid en genade samenkomen in Jezus Christus.">
+    <meta name="keywords" content="wie is God, waarom Jezus, wat is zonde, bestaat God, het evangelie, doel van het leven, wat gebeurt er na de dood, wetenschap en geloof, koperen slang, bergreden">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* BASE & RESET */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            color: #f8fafc;
+            background-color: #0b0f19;
+            line-height: 1.7;
+            font-size: 18px;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, .brand-font {
+            font-family: 'Cinzel', serif;
+            letter-spacing: 0.5px;
+        }
+
+        /* DYNAMIC SCROLL BACKGROUND GRADIENT CONTAINER */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -2;
+            transition: background 1.2s ease-in-out;
+            background: radial-gradient(circle at 50% 20%, #1e293b 0%, #0f172a 60%, #090d16 100%);
+        }
+
+        .overlay-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 0);
+            background-size: 32px 32px;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* NAVIGATION */
+        nav {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #f59e0b;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 28px;
+            height: 28px;
+            background: #d97706;
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #f59e0b;
+        }
+
+        .btn-cta-nav {
+            background: linear-gradient(135deg, #d97706, #b45309);
+            color: #fff !important;
+            padding: 0.5rem 1.2rem;
+            border-radius: 6px;
+            font-weight: 600 !important;
+            box-shadow: 0 4px 14px rgba(217, 119, 6, 0.3);
+        }
+
+        /* LAYOUT CONTAINERS */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 4rem 1.5rem;
+        }
+
+        .hero {
+            min-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 4rem 1.5rem;
+        }
+
+        .badge {
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            color: #f59e0b;
+            padding: 0.4rem 1.2rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.2rem, 5vw, 3.8rem);
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            color: #ffffff;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+
+        .hero p {
+            font-size: clamp(1.1rem, 2vw, 1.35rem);
+            max-width: 780px;
+            color: #94a3b8;
+            margin-bottom: 2.5rem;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: #0f172a;
+            padding: 1rem 2.2rem;
+            border-radius: 8px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.35);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(245, 158, 11, 0.5);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #f8fafc;
+            padding: 1rem 2.2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* SECTION STYLING */
+        section {
+            padding: 5rem 0;
+            position: relative;
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 750px;
+            margin: 0 auto 3.5rem auto;
+        }
+
+        .section-header h2 {
+            font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+            color: #ffffff;
+            margin-bottom: 1rem;
+        }
+
+        .section-header p {
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+
+        /* CARDS & GRID */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .card {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 2.2rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(8px);
+        }
+
+        .card:hover {
+            border-color: rgba(245, 158, 11, 0.4);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+
+        .card h3 {
+            font-size: 1.4rem;
+            color: #f8fafc;
+            margin-bottom: 0.8rem;
+        }
+
+        .card p {
+            color: #cbd5e1;
+            font-size: 1rem;
+        }
+
+        /* FEATURE HIGHLIGHT BOX */
+        .callout-box {
+            background: linear-gradient(135deg, rgba(74, 18, 26, 0.8), rgba(30, 41, 59, 0.9));
+            border-left: 5px solid #f59e0b;
+            padding: 2.5rem;
+            border-radius: 8px;
+            margin: 3rem 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .callout-box h3 {
+            color: #f59e0b;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        /* ACCORDION / FAQ */
+        .accordion {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        .accordion-item {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .accordion-header {
+            width: 100%;
+            padding: 1.3rem 1.8rem;
+            text-align: left;
+            background: none;
+            border: none;
+            color: #f8fafc;
+            font-size: 1.15rem;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s ease;
+        }
+
+        .accordion-header:hover {
+            background: rgba(245, 158, 11, 0.1);
+        }
+
+        .accordion-icon {
+            font-size: 1.3rem;
+            transition: transform 0.3s ease;
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.4s ease;
+            padding: 0 1.8rem;
+            color: #cbd5e1;
+            background: rgba(15, 23, 42, 0.5);
+        }
+
+        .accordion-item.active .accordion-content {
+            max-height: 500px;
+            padding: 1.2rem 1.8rem 1.8rem 1.8rem;
+        }
+
+        .accordion-item.active .accordion-icon {
+            transform: rotate(45deg);
+            color: #f59e0b;
+        }
+
+        /* QUIZ SECTION */
+        .quiz-container {
+            background: rgba(15, 23, 42, 0.9);
+            border: 2px solid #d97706;
+            border-radius: 16px;
+            padding: 2.5rem;
+            max-width: 800px;
+            margin: 0 auto;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+        }
+
+        .quiz-question {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 1.5rem;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .quiz-btn {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #f8fafc;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            text-align: left;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .quiz-btn:hover {
+            border-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.15);
+        }
+
+        .quiz-btn.correct {
+            background: rgba(34, 197, 94, 0.25) !important;
+            border-color: #22c55e !important;
+            color: #4ade80 !important;
+        }
+
+        .quiz-btn.wrong {
+            background: rgba(239, 68, 68, 0.25) !important;
+            border-color: #ef4444 !important;
+            color: #fca5a5 !important;
+        }
+
+        .quiz-feedback {
+            padding: 1rem 1.2rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            display: none;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .quiz-feedback.show {
+            display: block;
+        }
+
+        .quiz-feedback.success {
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid rgba(34, 197, 94, 0.4);
+            color: #86efac;
+        }
+
+        .quiz-feedback.error {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #fca5a5;
+        }
+
+        .quiz-next-btn {
+            background: #f59e0b;
+            color: #0f172a;
+            border: none;
+            padding: 0.8rem 1.8rem;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            display: none;
+            margin-top: 1.5rem;
+        }
+
+        /* FOOTER */
+        footer {
+            background: #070a11;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 3rem 1.5rem;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: #94a3b8;
+            text-decoration: underline;
+        }
+
+        /* RESPONSIVE DESIGN */
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .container { padding: 3rem 1rem; }
+            .hero { padding: 2rem 1rem; }
+            .quiz-container { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- DYNAMIC SCROLL BACKGROUND -->
+    <div id="bg-canvas"></div>
+    <div class="overlay-grid"></div>
+
+    <!-- NAVIGATION -->
+    <nav>
+        <a href="#" class="logo">
+            <div class="logo-icon"></div>
+            <span>Sacra Scientia</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="#dagelijks-woord" style="color: #f59e0b; font-weight: 700;">Dagelijkse Studie</a></li>
+            <li><a href="#oorsprong">Oorsprong</a></li>
+            <li><a href="#de-val">De Illusie</a></li>
+            <li><a href="#smeltoven">De Redder</a></li>
+            <li><a href="#bergreden">De Rots</a></li>
+            <li><a href="#twijfels">Vragen</a></li>
+            <li><a href="#quiz" class="btn-cta-nav">Doe de Quiz</a></li>
+        </ul>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <header class="hero">
+        <div class="badge">De Wetenschap van Gods Rechtvaardigheid</div>
+        <h1>Waarom ben jij hier?<br><span style="color: #f59e0b;">Ontdek de waarheid over jouw ziel.</span></h1>
+        <p>In een drukke wereld vol afleiding zoeken we allemaal naar rust, betekenis en de overwinning op de dood. Is het leven een toevalstreffer, of is jouw ziel geschapen voor een eeuwig doel?</p>
+        <div class="btn-group">
+            <a href="#dagelijks-woord" class="btn-primary">Lees de Dagelijkse Studie</a>
+            <a href="#quiz" class="btn-secondary">Test jouw inzicht</a>
+        </div>
+    </header>
+
+    <!-- SECTION: AUTOMATISCHE DAGELIJKSE SCHRIFTSTUDIE -->
+    <section id="dagelijks-woord" style="background: rgba(15, 23, 42, 0.95); border-top: 1px solid rgba(245, 158, 11, 0.2); border-bottom: 1px solid rgba(245, 158, 11, 0.2);">
+        <div class="container">
+            <div class="section-header">
+                <span class="badge">Automatisch Vernieuwd</span>
+                <h2>Het Woord voor Vandaag</h2>
+                <p>Een diepgaande, nuchtere en zuivere exegese volgens de Schriften.</p>
+            </div>
+
+            <!-- Hier laadt JavaScript automatisch de dagelijkse studie in -->
+            <div class="card" style="max-width: 850px; margin: 0 auto; border-color: rgba(245, 158, 11, 0.4);">
+                <div id="scripture-content">
+                    <p style="text-align: center; color: #94a3b8;">De dagelijkse studie wordt geladen...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 1: OORSPRONG EN ZIEL -->
+    <section id="oorsprong">
+        <div class="container">
+            <div class="section-header">
+                <h2>1. De Oorsprong: Wie ben jij werkelijk?</h2>
+                <p>Je bent niet zomaar een verzameling moleculen. De Bijbel leert dat God jou vormde en de levensadem in je blies.</p>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-icon">✨</div>
+                    <h3>Het Scheppingswoord (Dabar)</h3>
+                    <p>Waar menselijke woorden vaak machteloos zijn, is Gods Woord (<em>Dabar</em>) direct scheppend. God sprak, en de kosmos ontstond in perfecte orde. Alles wat bestaat, heeft zijn oorsprong in Zijn goddelijke wil.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🫁</div>
+                    <h3>De Levende Ziel (Nephesh)</h3>
+                    <p>God blies de levensadem (<em>Nishmat Chayim</em>) in de mens. Je bent een geschapen eenheid van een stoffelijk lichaam en een <strong>onsterfelijke ziel en geest (Ruach)</strong>. Het bloed is weliswaar de drager van het tijdelijke leven, maar jouw ziel leeft voort na de lichamelijke dood.</p>
+                </div>
+            </div>
+
+            <div class="callout-box">
+                <h3>Wat betekent Dit voor Jouw Leven?</h3>
+                <p>Omdat jij geschapen bent naar Gods beeld, verlangt jouw hart diep van binnen naar gemeenschap met God. Niets in deze materiële wereld — geen geld, succes of technologie — kan de leegte in jouw ziel definitief vullen. Je bent gemaakt voor de Eeuwigheid.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 2: DE ZONDEVAL EN VALSE VERLOSSERS -->
+    <section id="de-val">
+        <div class="container">
+            <div class="section-header">
+                <h2>2. De Illusie: Wat ging er mis?</h2>
+                <p>Waarom ervaren we zoveel gebrokenheid, schuld en angst voor de dood? De wortel ligt in de zondeval.</p>
+            </div>
+
+            <div class="grid-3">
+                <div class="card">
+                    <div class="card-icon">🐍</div>
+                    <h3>De Leugen van Autonomie</h3>
+                    <p>In het Paradijs leefde de mens in schuldloze naaktheid (<em>Aroom</em>). De verleider (<em>Aroem</em>) zaaide achterdocht: <em>"Is het ook dat God gezegd heeft...?"</em> De mens koos ervoor om onafhankelijk van God zijn eigen normen te bepalen.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🍃</div>
+                    <h3>Schorten van Vijgenbladeren</h3>
+                    <p>Toen de mens ontdekte dat hij naakt en schuldig was, maakte hij schorten van vijgenbladeren. Dit staat voor al onze menselijke bedenkselen (<em>Chischbonoth</em>) om onze eigen schuld te bedekken buiten God om.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">⚙️</div>
+                    <h3>Moderne Valse Verlossers</h3>
+                    <p>Vandaag maken we nog steeds 'vijgenbladeren': we zoeken ons heil in wetenschappelijke zelfredding, de verering van het uiterlijk, of de gedachte dat we 'goed genoeg zijn'. Maar uiterlijke vorm bedekt geen innerlijke zonde.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 3: DE SMELTOVEN EN HET VERVANGEND OFFER -->
+    <section id="smeltoven">
+        <div class="container">
+            <div class="section-header">
+                <h2>3. De Redder: De Smeltoven van Genade</h2>
+                <p>God liet de mens niet in zijn verlorenheid. In het Oude Testament gaf God al een diep geheim prijs: de Koperen Slang.</p>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-icon">🔥</div>
+                    <h3>Het Koper in de Smeltoven (Nechosjet)</h3>
+                    <p>Toen Israël in de woestijn werd gebeten door dodelijke slangen, moest Mozes een koperen slang op een staak verhogen. Koper (<em>Nechosjet</em>) moet eerst door de intense hitte van de smeltoven om zuiver te worden. Het vuur verteert het edele metaal niet, maar loutert het.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">✝️</div>
+                    <h3>Christus: De Gedaante Zonder Vergif</h3>
+                    <p>De koperen slang had exact de gedaante van de giftige slang, maar bevatte <strong>geen enkel vergif</strong>. Zo kwam Jezus Christus in de gedaante van ons zondige vlees, maar volkomen zonder zonde! Aan het kruis ging Hij door de vreselijke smeltoven van Gods rechtvaardige toorn om onze straf te dragen.</p>
+                </div>
+            </div>
+
+            <div class="callout-box" style="background: linear-gradient(135deg, rgba(217, 119, 6, 0.2), rgba(15, 23, 42, 0.9)); border-left-color: #22c55e;">
+                <h3 style="color: #4ade80;">Het Wonder van de Redding</h3>
+                <p>Zoals een stervende Israëliet slechts hoefde te <strong>kijken</strong> naar de verhoogde koperen slang om te genezen, zo hoef jij geen ingewikkelde prestaties te leveren. Redding is een genadegift! Wie met een gelovige blik ziet op de gekruisigde en opgestane Heere Jezus, ontvangt vergeving en eeuwig leven.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 4: HET LEVEN OP DE ROTS -->
+    <section id="bergreden">
+        <div class="container">
+            <div class="section-header">
+                <h2>4. De Rots: Bouwen op een Vaste Grond</h2>
+                <p>Hoe ziet het leven eruit als je Jezus volgt? In de Bergreden (Mattheüs 5-7) geeft Jezus ons het kompas voor het dagelijks leven.</p>
+            </div>
+
+            <div class="grid-3">
+                <div class="card">
+                    <div class="card-icon">🧂</div>
+                    <h3>Zout & Licht in de Wereld</h3>
+                    <p>Als gelovige trek je je niet kramphaftig terug uit de maatschappij. Je bent het zout dat bederf tegengaat en het licht dat schijnt in de duisternis door eerlijkheid, liefde en gerechtigheid.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">❤️</div>
+                    <h3>Vernieuwing van het Hart</h3>
+                    <p>God kijkt niet alleen naar je uiterlijk gedrag. Jezus leert dat haat gelijk staat aan moord en begeerte aan echtbreuk. Ware vroomheid gebeurt in het verborgene voor de Vader, niet voor de show.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🏰</div>
+                    <h3>Huis op de Rots</h3>
+                    <p>Wie luistert naar de woorden van Jezus én ze doet, bouwt zijn leven op de <strong>Rots</strong>. Wanneer de stormen van het leven en het oordeel komen, blijft het huis onwankelbaar staan!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 5: TEGENWERPINGEN EN EERLIJKE ANTWOORDEN (FAQ) -->
+    <section id="twijfels">
+        <div class="container">
+            <div class="section-header">
+                <h2>5. Eerlijke Antwoorden op Jouw Twijfels</h2>
+                <p>Heb je vragen of bedenkingen? Hier zijn heldere antwoorden op de meest gestelde vragen over God en het geloof.</p>
+            </div>
+
+            <div class="accordion">
+                <div class="accordion-item">
+                    <button class="accordion-header">
+                        <span>Als God liefde is, waarom is er dan zoveel lijden in de wereld?</span>
+                        <span class="accordion-icon">+</span>
+                    </button>
+                    <div class="accordion-content">
+                        <p>Het lijden is niet door God zo geschapen, maar is het rechtstreekse gevolg van de zondeval (Genesis 3), waardoor de mens de band met de Levensbron verbrak. God laat het lijden niet zomaar begaan: in Jezus Christus is Hij Zelf de smeltoven van het menselijk lijden binnengestapt om de zonde en de dood definitief te overwinnen.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <button class="accordion-header">
+                        <span>Spreekt de wetenschap het geloof in God niet tegen?</span>
+                        <span class="accordion-icon">+</span>
+                    </button>
+                    <div class="accordion-content">
+                        <p>Nee. Het woord 'wetenschap' in bijbelse zin (<em>Sacra Scientia</em>) betekent de geopenbaarde kennis der waarheid. Natuurwetenschap onderzoekt *hoe* de dingen werken, maar de Schrift openbaart *waarom* alles bestaat en wie de Auteur is. Veel grote wetenschappers bouwden hun onderzoek juist op de overtuiging dat een wijze Schepper de kosmos ordelijk heeft gemaakt.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <button class="accordion-header">
+                        <span>Komt uiteindelijk niet gewoon ieder mens in de hemel? (Alverzoening)</span>
+                        <span class="accordion-icon">+</span>
+                    </button>
+                    <div class="accordion-content">
+                        <p>Hoewel dat menselijkerwijs aantrekkelijk klinkt, leert de Schrift helder de tweeërlei uitgang. In Mattheüs 25:46 gebruikt Jezus exact hetzelfde Griekse woord (<em>aionios</em>) voor de eeuwige straf als voor het eeuwige leven. God dwingt niemand in Zijn liefdevolle gemeenschap; wie Jezus afwijst, kiest er zelf voor om buiten Gods genade te blijven.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <button class="accordion-header">
+                        <span>Ik ben toch een goed mens? Waarom heb ik een Redder nodig?</span>
+                        <span class="accordion-icon">+</span>
+                    </button>
+                    <div class="accordion-content">
+                        <p>Wanneer we ons vergelijken met anderen, lijken we al snel 'goed'. Maar Gods maatstaf is volmaakte reinheid en liefde (de Bergreden). Als we eerlijk in ons eigen hart kijken naar onze gedachten, motivaties en egoïsme, ontdekken we dat we Gods wet hebben gebroken. Net zoals een kleine giftige slangenbeet dodelijk is, heeft elke ziel vergeving en reiniging nodig.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 6: INTERACTIEVE QUIZ -->
+    <section id="quiz">
+        <div class="container">
+            <div class="section-header">
+                <h2>6. Test Jouw Kennis & Inzicht</h2>
+                <p>Beantwoord 5 korte vragen op basis van de informatie op deze pagina en ontdek hoe diep jouw inzicht is!</p>
+            </div>
+
+            <div class="quiz-container">
+                <div id="quiz-box">
+                    <div class="quiz-question" id="quiz-title">Vraag wordt geladen...</div>
+                    <div class="quiz-options" id="quiz-options"></div>
+                    <div class="quiz-feedback" id="quiz-feedback"></div>
+                    <button class="quiz-next-btn" id="quiz-next-btn" onclick="nextQuestion()">Volgende Vraag</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container">
+            <p style="margin-bottom: 1rem; color: #94a3b8; font-family: 'Cinzel', serif; font-weight: 700; font-size: 1.1rem;">De Wetenschap van Gods Rechtvaardigheid</p>
+            <p>Gebaseerd op de schriftuurlijke en ondervindelijke overdenking van D.H.D. van der Wal.</p>
+            <p style="margin-top: 1.5rem; font-size: 0.8rem;">&copy; 2026 Sacra Scientia Evangelisatie. Alle rechten voorbehouden.</p>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT: INTERACTIVITY, DYNAMIC BG & AUTO STUDY LOADER -->
+    <script>
+        // 1. DYNAMIC BACKGROUND COLOR SHIFT ON SCROLL
+        const bgCanvas = document.getElementById('bg-canvas');
+        window.addEventListener('scroll', () => {
+            const scrollPos = window.scrollY;
+            const totalHeight = document.body.scrollHeight - window.innerHeight;
+            const scrollFraction = scrollPos / totalHeight;
+
+            if (scrollFraction < 0.15) {
+                bgCanvas.style.background = 'radial-gradient(circle at 50% 20%, #1e293b 0%, #0f172a 60%, #090d16 100%)';
+            } else if (scrollFraction < 0.35) {
+                bgCanvas.style.background = 'radial-gradient(circle at 50% 20%, #4a121a 0%, #1e1b1e 60%, #0b090a 100%)';
+            } else if (scrollFraction < 0.6) {
+                bgCanvas.style.background = 'radial-gradient(circle at 50% 20%, #78350f 0%, #311806 60%, #0f172a 100%)';
+            } else {
+                bgCanvas.style.background = 'radial-gradient(circle at 50% 20%, #1e3a8a 0%, #0f172a 60%, #070a11 100%)';
+            }
+        });
+
+        // 2. ACCORDION FUNCTIONALITY
+        document.querySelectorAll('.accordion-header').forEach(button => {
+            button.addEventListener('click', () => {
+                const accordionItem = button.parentElement;
+                const isActive = accordionItem.classList.contains('active');
+                
+                document.querySelectorAll('.accordion-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+
+                if (!isActive) {
+                    accordionItem.classList.add('active');
+                }
+            });
+        });
+
+        // 3. AUTOMATISCH INLADEN DAGELIJKSE STUDIE VANAF GITHUB / NETLIFY
+        async function loadDailyStudy() {
+            try {
+                // Zoekt naar het JSON-bestand dat het Google Apps Script dagelijks uploadt naar je website map
+                const response = await fetch('./dagelijkse-studie.json?' + new Date().getTime());
+                if (response.ok) {
+                    const data = await response.json();
+                    // Converteert de tekst naar nette HTML-paragrafen
+                    const formattedHtml = data.content.split('\n\n').map(p => `<p style="margin-bottom: 1.2rem; color: #cbd5e1; line-height: 1.8;">${p}</p>`).join('');
+                    document.getElementById('scripture-content').innerHTML = formattedHtml;
+                } else {
+                    document.getElementById('scripture-content').innerHTML = '<p style="color: #94a3b8; text-align: center;">De eerste dagelijkse studie wordt binnenkort gepubliceerd.</p>';
+                }
+            } catch (error) {
+                document.getElementById('scripture-content').innerHTML = '<p style="color: #94a3b8; text-align: center;">Kan de dagelijkse studie momenteel niet laden.</p>';
+            }
+        }
+        loadDailyStudy();
+
+        // 4. INTERACTIVE QUIZ DATA & LOGIC
+        const quizData = [
+            {
+                question: "1. Wat betekent het begrip 'Sacra Scientia' in de context van de Bijbel?",
+                options: [
+                    "Empirisch natuurwetenschappelijk onderzoek in een laboratorium.",
+                    "De heilige, geopenbaarde kennis der Waarheid die door de Geest in het hart wordt geschreven.",
+                    "Een verstandelijke filosofie opgebouwd door menselijke logica."
+                ],
+                correct: 1,
+                explanation: "Juist! Sacra Scientia is geopenbaarde kennis (Titus 1:1) die niet door menselijk verstand wordt bedacht, maar door de Heilige Geest ondervindelijk wordt geleerd."
+            },
+            {
+                question: "2. Wat verbeelden de 'schorten van vijgenbladeren' (Chischbonoth) na de zondeval?",
+                options: [
+                    "Een modeverschijnsel in de oudheid.",
+                    "Menselijke pogingen en bedenkselen om eigen schuld te bedekken buiten Gods genade om.",
+                    "Een goddelijke opdracht om kleding te maken."
+                ],
+                correct: 1,
+                explanation: "Klopt! Vijgenbladeren staan voor al onze menselijke zelfredding en uiterlijke godsdienstigheid waarmee we onze spirituele naaktheid proberen te bedekken."
+            },
+            {
+                question: "3. Waarom werd de Koperen Slang (Nechosjet) in het vuur van de smeltoven gegoten?",
+                options: [
+                    "Dat was toevallig het enige materiaal dat Mozes bij zich had.",
+                    "Het louterende vuur wijst naar Jezus Christus die door de smeltoven van Gods toorn ging om onze straf te dragen.",
+                    "Om de slang een gouden glans te geven."
+                ],
+                correct: 1,
+                explanation: "Uitstekend! Het louteringsproces van koper verbeeldt dat Christus standhield in het vuur van het goddelijk gericht, waar de zondaar tot as zou verbranden."
+            },
+            {
+                question: "4. Welke functie heeft de Bergreden (Mattheüs 5-7) voor wie in Jezus gelooft?",
+                options: [
+                    "Een onmogelijk eisenpakket dat afgestraft moet worden.",
+                    "Een liefdevolle leefregel der dankbaarheid om te bouwen op de Rots.",
+                    "Een reeks oude wetten die niet meer gelden."
+                ],
+                correct: 1,
+                explanation: "Precies! Voor de gerechtvaardigde gelovige wordt de Bergreden de gids voor de praktijk der dankbaarheid (tertius usus legis)."
+            },
+            {
+                question: "5. Wat leert de Schrift over het Eindoordeel en de gedachte van 'alverzoening'?",
+                options: [
+                    "Iedereen komt uiteindelijk vanzelf in de hemel, ongeacht geloof.",
+                    "De Bijbel leert helder de tweeërlei uitgang: eeuwige straf én eeuwig leven staan op hetzelfde taalkundige fundament (Mattheüs 25:46).",
+                    "De hel is slechts een tijdelijke vakantieplek."
+                ],
+                correct: 1,
+                explanation: "Helemaal goed! Jezus gebruikt in Mattheüs 25:46 hetzelfde woord 'aionios' voor zowel de straf als het het leven. Het benadrukt de grote ernst van onze keuzes."
+            }
+        ];
+
+        let currentQ = 0;
+        let score = 0;
+
+        function loadQuestion() {
+            const q = quizData[currentQ];
+            document.getElementById('quiz-title').innerText = q.question;
+            const optionsBox = document.getElementById('quiz-options');
+            optionsBox.innerHTML = '';
+            
+            const feedbackBox = document.getElementById('quiz-feedback');
+            feedbackBox.className = 'quiz-feedback';
+            feedbackBox.style.display = 'none';
+            document.getElementById('quiz-next-btn').style.display = 'none';
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'quiz-btn';
+                btn.innerText = opt;
+                btn.onclick = () => selectOption(idx);
+                optionsBox.appendChild(btn);
+            });
+        }
+
+        function selectOption(index) {
+            const q = quizData[currentQ];
+            const buttons = document.querySelectorAll('.quiz-btn');
+            buttons.forEach(b => b.disabled = true);
+
+            const feedbackBox = document.getElementById('quiz-feedback');
+            feedbackBox.style.display = 'block';
+
+            if (index === q.correct) {
+                buttons[index].classList.add('correct');
+                feedbackBox.className = 'quiz-feedback show success';
+                feedbackBox.innerText = q.explanation;
+                score++;
+            } else {
+                buttons[index].classList.add('wrong');
+                buttons[q.correct].classList.add('correct');
+                feedbackBox.className = 'quiz-feedback show error';
+                feedbackBox.innerText = "Helaas niet juist. " + q.explanation;
+            }
+
+            document.getElementById('quiz-next-btn').style.display = 'inline-block';
+        }
+
+        function nextQuestion() {
+            currentQ++;
+            if (currentQ < quizData.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            const box = document.getElementById('quiz-box');
+            box.innerHTML = `
+                <div style="text-align: center;">
+                    <h3 style="font-size: 1.8rem; color: #f59e0b; margin-bottom: 1rem;">Quiz Voltooid!</h3>
+                    <p style="font-size: 1.3rem; margin-bottom: 1.5rem;">Jouw score: <strong>${score} van de ${quizData.length}</strong> goed.</p>
+                    <p style="color: #cbd5e1; margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+                        ${score === 5 ? 'Geweldig! Je hebt de kern van Gods rechtvaardigheid en de verlossing in Christus diep begrepen.' : 'Bedankt voor het meedoen! Neem gerust de tijd om de pagina nog eens door te lezen en te ontdekken wat Jezus voor jou betekent.'}
+                    </p>
+                    <a href="#oorsprong" onclick="location.reload()" class="btn-primary" style="display: inline-block;">Opnieuw Proberen</a>
+                </div>
+            `;
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>

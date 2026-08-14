@@ -1,0 +1,30 @@
+<!-- Voeg in de head toe: -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+    const { jsPDF } = window.jspdf;
+
+    async function loadDailyStudy() {
+        const response = await fetch('./studies/vandaag.json'); // Zorg dat je script dit bestand bijwerkt
+        const data = await response.json();
+        
+        // ... (HTML rendering code)
+        
+        // PDF met Spiegelbeeld antwoorden
+        window.generatePDF = function() {
+            const doc = new jsPDF();
+            doc.setFontSize(18);
+            doc.text("Schriftstudie - " + data.date, 10, 20);
+            doc.setFontSize(12);
+            doc.text(doc.splitTextToSize(data.text, 180), 10, 40);
+            
+            // Antwoorden in spiegelbeeld (onderaan pagina, geroteerd)
+            doc.setFontSize(10);
+            doc.setTextColor(200);
+            doc.text("Antwoorden (spiegelbeeld):", 10, 280);
+            doc.text(data.quiz_answers, 10, 290, { angle: 180 }); 
+            
+            doc.save("Studie_" + data.date + ".pdf");
+        };
+    }
+</script>

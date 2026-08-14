@@ -1,30 +1,183 @@
-<!-- Voeg in de head toe: -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Het Woord voor Vandaag | Sacra Scientia</title>
+    <!-- jsPDF voor client-side PDF generatie -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-primary: #0b0f19;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --accent: #d97706;
+            --accent-hover: #b45309;
+            --card-bg: rgba(15, 23, 42, 0.7);
+            --border-color: rgba(255, 255, 255, 0.08);
+        }
 
-<script>
-    const { jsPDF } = window.jspdf;
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    async function loadDailyStudy() {
-        const response = await fetch('./studies/vandaag.json'); // Zorg dat je script dit bestand bijwerkt
-        const data = await response.json();
-        
-        // ... (HTML rendering code)
-        
-        // PDF met Spiegelbeeld antwoorden
-        window.generatePDF = function() {
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            color: var(--text-main); background-color: var(--bg-primary);
+            line-height: 1.8; font-size: 17px;
+        }
+
+        h1, h2, h3 { font-family: 'Cinzel', serif; color: #fff; }
+
+        #bg-canvas {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2;
+            background: radial-gradient(circle at 50% 20%, #1e293b 0%, #0f172a 60%, #070a11 100%);
+        }
+
+        nav {
+            position: sticky; top: 0; width: 100%;
+            background: rgba(11, 15, 25, 0.9); backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-color); z-index: 1000;
+            padding: 1.2rem 2.5rem; display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .logo {
+            font-family: 'Cinzel', serif; font-size: 1.2rem; font-weight: 700; color: var(--accent);
+            text-decoration: none; display: flex; align-items: center; gap: 12px;
+        }
+        .logo-icon { width: 24px; height: 24px; background: var(--accent); clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); }
+
+        .nav-links { display: flex; gap: 2rem; list-style: none; align-items: center; }
+        .nav-links a { color: var(--text-muted); text-decoration: none; font-size: 0.95rem; font-weight: 500; }
+        .nav-links a:hover, .nav-links a.active { color: var(--accent); }
+
+        .container { max-width: 850px; margin: 0 auto; padding: 4rem 1.5rem; }
+
+        .study-article {
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 12px; padding: 3rem; backdrop-filter: blur(10px);
+            border-left: 4px solid var(--accent); box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            margin-bottom: 3rem;
+        }
+
+        .study-date { font-size: 0.85rem; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 1.5rem; }
+        .study-article p { margin-bottom: 1.5rem; color: #cbd5e1; }
+
+        .quiz-section {
+            background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(217, 119, 6, 0.3);
+            border-radius: 12px; padding: 2.5rem; margin-top: 3rem;
+        }
+        .quiz-section h3 { color: var(--accent); margin-bottom: 1rem; font-size: 1.4rem; }
+
+        .btn-download {
+            background: var(--accent); color: #0b0f19; border: none;
+            padding: 0.9rem 2rem; border-radius: 8px; font-weight: 600; cursor: pointer;
+            display: inline-block; transition: all 0.3s ease; margin-top: 2rem; font-size: 1rem;
+        }
+        .btn-download:hover { background: var(--accent-hover); transform: translateY(-2px); }
+
+        footer { background: #070a11; border-top: 1px solid var(--border-color); padding: 3rem; text-align: center; color: var(--text-muted); font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+    <div id="bg-canvas"></div>
+
+    <nav>
+        <a href="index.html" class="logo">
+            <div class="logo-icon"></div>
+            <span>Sacra Scientia</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="dagelijks.html" class="active">Dagelijkse Studie</a></li>
+            <li><a href="studies.html">Archief</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        <div style="text-align: center; margin-bottom: 3rem;">
+            <h1>Het Woord voor Vandaag</h1>
+            <p style="color: var(--text-muted); margin-top: 0.5rem;">De dagelijkse exegese en verdieping.</p>
+        </div>
+
+        <div id="daily-content">
+            <div class="study-article">
+                <p style="text-align: center; color: var(--text-muted);">De dagelijkse overdenking wordt geladen...</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>Sacra Scientia &copy; 2026</p>
+    </footer>
+
+    <script>
+        const { jsPDF } = window.jspdf;
+
+        async function loadDailyStudyPage() {
+            try {
+                // Haalt het meest recente JSON-bestand op of de directe dagstudie
+                const repo = "DHDvdW/SacraScientia"; 
+                const res = await fetch(`https://api.github.com/repos/${repo}/contents/studies`);
+                const files = await res.json();
+                files.sort((a, b) => b.name.localeCompare(a.name));
+
+                if (files.length > 0) {
+                    // Pak de nieuwste studie
+                    const latestFile = files.find(f => f.name.endsWith('.json'));
+                    if (latestFile) {
+                        const studyRes = await fetch(latestFile.download_url);
+                        const data = await studyRes.json();
+                        
+                        const textHtml = data.text ? data.text.split('\n').map(p => `<p>${p}</p>`).join('') : '<p>Geen tekst gevonden.</p>';
+                        const quizHtml = data.quiz ? `<div class="quiz-section"><h3>Inzichtquiz</h3><p style="white-space: pre-line; color: #cbd5e1;">${data.quiz}</p></div>` : '';
+
+                        const safeText = (data.text || "").replace(/`/g, '\\`');
+                        const safeQuiz = (data.quiz || "").replace(/`/g, '\\`');
+                        const safeAnswers = (data.answers || "Geen antwoorden").replace(/`/g, '\\`');
+
+                        document.getElementById('daily-content').innerHTML = `
+                            <article class="study-article">
+                                <div class="study-date">Gepubliceerd op: ${data.date}</div>
+                                ${textHtml}
+                                ${quizHtml}
+                                <button class="btn-download" onclick="downloadPDF('${data.date}', \`${safeText}\`, \`${safeQuiz}\`, \`${safeAnswers}\`)">Download als PDF (inclusief quiz & spiegel-antwoorden)</button>
+                            </article>
+                        `;
+                    }
+                }
+            } catch (e) {
+                document.getElementById('daily-content').innerHTML = '<p style="text-align: center; color: var(--text-muted);">De studie voor vandaag kon niet worden geladen. Probeer het later nog eens.</p>';
+            }
+        }
+
+        function downloadPDF(date, text, quiz, answers) {
             const doc = new jsPDF();
-            doc.setFontSize(18);
-            doc.text("Schriftstudie - " + data.date, 10, 20);
-            doc.setFontSize(12);
-            doc.text(doc.splitTextToSize(data.text, 180), 10, 40);
+            doc.setFontSize(16);
+            doc.text("Sacra Scientia - Schriftstudie (" + date + ")", 10, 15);
             
-            // Antwoorden in spiegelbeeld (onderaan pagina, geroteerd)
             doc.setFontSize(10);
-            doc.setTextColor(200);
-            doc.text("Antwoorden (spiegelbeeld):", 10, 280);
-            doc.text(data.quiz_answers, 10, 290, { angle: 180 }); 
+            doc.text(doc.splitTextToSize(text, 180), 10, 25);
             
-            doc.save("Studie_" + data.date + ".pdf");
-        };
-    }
-</script>
+            if (quiz) {
+                doc.addPage();
+                doc.setFontSize(14);
+                doc.text("Inzichtvragen", 10, 20);
+                doc.setFontSize(10);
+                doc.text(doc.splitTextToSize(quiz, 180), 10, 30);
+            }
+
+            // Antwoorden in spiegelbeeld onderaan
+            doc.setFontSize(8);
+            doc.setTextColor(150);
+            doc.text("--- ANTWOORDEN (DRAAI DE PAGINA OM) ---", 105, 270, { align: 'center' });
+            doc.text(doc.splitTextToSize(answers, 180), 105, 280, { align: 'center', angle: 180 });
+
+            doc.save(`Studie_${date}.pdf`);
+        }
+
+        loadDailyStudyPage();
+    </script>
+</body>
+</html>

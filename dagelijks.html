@@ -171,99 +171,121 @@
                 container.innerHTML = '<p style="text-align: center; color: var(--text-muted);">De studie voor vandaag kon niet worden geladen. Controleer of de map "studies" op GitHub bestaat.</p>';
             }
         }
-
 function generatePDF(date, text, quiz, answers) {
             try {
                 const { jsPDF } = window.jspdf;
-                const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+                const doc = new jsPDF({ unit: 'mm', format: 'a4', putOnlyUsedFonts: true, floatPrecision: 2 });
                 
                 let y = 20;
                 const margin = 18;
                 const pageWidth = 210;
                 const contentWidth = pageWidth - (margin * 2);
-                const lineHeight = 6;
+                const lineHeight = 5.5;
 
-                // Strenge opschoning: verwijdert alle sterretjes (*), vreemde opmaakcodes en dwingt uniforme platte tekst af
-                function sanitizeText(str) {
+                // Radicalere opschoning: verwijdert alle dubbele spaties, regeleinde-breuken en opmaakrestanten
+                function cleanTextForPDF(str) {
                     if (!str) return "";
                     return str
-                        .replace(/\*/g, "")                          // Verwijdert alle sterretjes (voorkomt dat cursief/vet exploderen)
-                        .replace(/[^\x00-\x7F\u00A0-\u00FF\u0100-\u017F]/g, " ") // Vervangt niet-westerse tekens
-                        .replace(/[ \t]{2,}/g, " ")                  // Voorkomt uitgerekte spaties
+                        .replace(/\*/g, "")                          // Verwijder sterretjes
+                        .replace(/[^\x00-\x7F\u00A0-\u00FF\u0100-\u017F]/g, " ") // Vervang rare tekens
+                        .replace(/[ \t]+/g, " ")                     // Dwing exact één spatie af tussen woorden (voorkomt uitrekenfouten)
                         .replace(/\r/g, "")
                         .trim();
                 }
 
-                const cleanText = sanitizeText(text);
-                const cleanQuiz = sanitizeText(quiz);
-                const cleanAnswers = sanitizeText(answers && answers !== "undefined" ? answers : "Geen antwoorden beschikbaar in het archief.");
+                const cleanContent = cleanTextForPDF(text);
+                const cleanQuizContent = cleanTextForPDF(quiz);
+                const cleanAnswersContent = cleanTextForPDF(answers && answers !== "undefined" ? answers : "Geen antwoorden beschikbaar.");
 
                 // --- PAGINA 1: KOPTEKST & HOOFDTEKST ---
                 doc.setFont("Helvetica", "bold");
-                doc.setFontSize(15);
-                doc.setTextColor(217, 119, 6); // Vaste accentkleur
+                doc.setFontSize(14);
+                doc.setTextColor(217, 119, 6);
                 doc.text("Sacra Scientia — Schriftstudie", margin, y);
                 
                 doc.setFont("Helvetica", "italic");
-                doc.setFontSize(9.5);
+                doc.setFontSize(9);
                 doc.setTextColor(100);
                 doc.text("Gepubliceerd op: " + date, margin, y + 5);
-                y += 16;
+                y += 15;
 
-                const paragraphs = cleanText.split('\n').map(p => p.trim()).filter(p => p !== "");
+                // We brekken de tekst op in alinea's via echte regeleinden
+                const rawParagraphs = text.split('\n');
+                
+                doc.setFont("Helvetica", "normal");
+                doc.setFontSize(9.5);
+                doc.setTextColor(40);
 
-                for (let i = 0; i < paragraphs.length; i++) {
-                    const para = paragraphs[i];
-                    
-                    // Strenge scheiding: normale bodytekst krijgt ALTIJD dezelfde font-instellingen
-                    doc.setFont("Helvetica", "normal");
-                    doc.setFontSize(10);
-                    doc.setTextColor(40);
+                for (let i = 0; i < rawParagraphs.length; i++) {
+                    const para = cleanTextForPDF(rawParagraphs[i]);
+                    if (para === "") {
+                        y += 3; // Witregel
+                        continue;
+                    }
 
+                    // Controleer of het een titel of bijbelvers is (korte regel)
+                    const isHeading = para.length < 70 && !para.endsWith('.');
+                    if (isHeading) {
+                        doc.setFont("Helvetica", "bold");
+                        doc.setFontSize(10.5);
+                        doc.setTextColor(217, 119, 6);
+                        y += 2;
+                    } else {
+                        doc.setFont("Helvetica", "normal");
+                        doc.setFontSize(9.5);
+                        doc.setTextColor(40);
+                    }
+
+                    // Gebruik dwingende links-uitlijning via opties om uitrekken te voorkomen
                     const splitLines = doc.splitTextToSize(para, contentWidth);
                     for (let j = 0; j < splitLines.length; j++) {
                         if (y > 270) {
                             doc.addPage();
                             y = 20;
                         }
-                        doc.text(splitLines[j], margin, y);
+                        // Cruciaal: { align: 'left' } voorkomt dat jsPDF de regels uitrekt over de breedte!
+                        doc.text(splitLines[j], margin, y, { align: 'left' });
                         y += lineHeight;
                     }
-                    y += 3; // Vaste witruimte tussen alinea's
+                    if (isHeading) y += 2;
                 }
 
-                // --- PAGINA 2: INZICHTQUIZ (indien aanwezig) ---
-                if (cleanQuiz) {
+                // --- PAGINA 2: QUIZ (indien aanwezig) ---
+                if (cleanQuizContent) {
                     doc.addPage();
                     y = 20;
 
                     doc.setFont("Helvetica", "bold");
-                    doc.setFontSize(13);
+                    doc.setFontSize(12);
                     doc.setTextColor(217, 119, 6);
                     doc.text("Inzichtvragen", margin, y);
                     y += 10;
 
-                    const quizParas = cleanQuiz.split('\n').map(p => p.trim()).filter(p => p !== "");
-                    
-                    for (let i = 0; i < quizParas.length; i++) {
-                        doc.setFont("Helvetica", "normal");
-                        doc.setFontSize(10);
-                        doc.setTextColor(40);
+                    const quizLines = cleanQuizContent.split('\n');
+                    doc.setFont("Helvetica", "normal");
+                    doc.setFontSize(9.5);
+                    doc.setTextColor(40);
 
-                        const splitQuizLines = doc.splitTextToSize(quizParas[i], contentWidth);
+                    for (let i = 0; i < quizLines.length; i++) {
+                        const qLine = cleanTextForPDF(quizLines[i]);
+                        if (qLine === "") {
+                            y += 3;
+                            continue;
+                        }
+
+                        const splitQuizLines = doc.splitTextToSize(qLine, contentWidth);
                         for (let j = 0; j < splitQuizLines.length; j++) {
                             if (y > 270) {
                                 doc.addPage();
                                 y = 20;
                             }
-                            doc.text(splitQuizLines[j], margin, y);
+                            doc.text(splitQuizLines[j], margin, y, { align: 'left' });
                             y += lineHeight;
                         }
-                        y += 2;
                     }
                 }
 
-                // --- PAGINA 3: SPIEGELBEELD ANTWOORDEN (Geheel gecontroleerd op een schone pagina) ---
+                // --- PAGINA 3: ANTWOORDEN (Op een eigen, strakke pagina) ---
                 doc.addPage();
                 let ansY = 30;
 
@@ -278,7 +300,10 @@ function generatePDF(date, text, quiz, answers) {
                 doc.setTextColor(50);
 
                 const splitAnswers = doc.splitTextToSize(cleanAnswers, contentWidth);
-                doc.text(splitAnswers, margin, ansY);
+                for (let k = 0; k < splitAnswers.length; k++) {
+                    doc.text(splitAnswers[k], margin, ansY, { align: 'left' });
+                    ansY += lineHeight;
+                }
 
                 doc.save(`Studie_${date}.pdf`);
             } catch (err) {

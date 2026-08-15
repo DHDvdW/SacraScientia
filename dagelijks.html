@@ -181,118 +181,111 @@ function generatePDF(date, text, quiz, answers) {
                 const margin = 15;
                 const pageWidth = 210;
                 const contentWidth = pageWidth - (margin * 2);
+                const lineHeight = 6;
 
-                // Hulpfunctie om corrupte Unicode-tekens te filteren maar witregels en opmaak te behouden
-                function cleanParagraph(str) {
+                // Schoonmaakfunctie die rare tekens verwijdert en regeleinden normaliseert
+                function cleanText(str) {
                     if (!str) return "";
                     return str
-                        .replace(/[^\x00-\x7F\u00A0-\u00FF\u0100-\u017F]/g, "") // Behoudt standaard en westerse accenten, verwijdert rare tekens
+                        .replace(/[^\x00-\x7F\u00A0-\u00FF\u0100-\u017F]/g, " ")
+                        .replace(/\r/g, "")
                         .trim();
                 }
 
-                // --- PAGINA 1: HOOFDTEKST & BIJBELTEKST ---
+                const safeText = cleanText(text);
+                const safeQuiz = cleanText(quiz);
+                const safeAnswers = cleanText(answers || "Geen antwoorden beschikbaar.");
+
+                // --- PAGINA 1: TITEL & HOOFDTEKST ---
                 doc.setFont("Helvetica", "bold");
-                doc.setFontSize(16);
-                doc.setTextColor(217, 119, 6); // Accentkleur
+                doc.setFontSize(15);
+                doc.setTextColor(217, 119, 6);
                 doc.text("Sacra Scientia — Schriftstudie", margin, y);
                 
                 doc.setFont("Helvetica", "italic");
-                doc.setFontSize(10);
-                doc.setTextColor(120);
-                doc.text("Gepubliceerd op: " + date, margin, y + 6);
-                y += 18;
+                doc.setFontSize(9.5);
+                doc.setTextColor(100);
+                doc.text("Gepubliceerd op: " + date, margin, y + 5);
+                y += 15;
 
-                // Splits de tekst op in alinea's op basis van regeleinden (\n)
-                const paragraphs = text.split('\n');
-
-                doc.setFont("Helvetica", "normal");
-                doc.setFontSize(10.5);
-                doc.setTextColor(40);
-
-                for (let p = 0; p < paragraphs.length; p++) {
-                    const cleanedPara = cleanParagraph(paragraphs[p]);
-                    if (cleanedPara === "") {
-                        // Witregel toevoegen tussen alinea's
-                        y += 4;
+                // Hoofdstuk tekst verwerken per alinea
+                const paragraphs = safeText.split('\n');
+                
+                for (let i = 0; i < paragraphs.length; i++) {
+                    const para = paragraphs[i].trim();
+                    if (para === "") {
+                        y += 3; // Vaste witregel
                         continue;
                     }
 
-                    // Bepaal of het een koptekst is (bijv. korte regels of regels zonder punt aan het eind)
-                    const isHeader = cleanedPara.length < 60 && !cleanedPara.endsWith('.');
-                    
-                    if (isHeader) {
-                        doc.setFont("Helvetica", "bold");
-                        doc.setFontSize(11.5);
-                        doc.setTextColor(217, 119, 6);
-                        y += 2; // Extra ruimte boven een kop
-                    } else {
-                        doc.setFont("Helvetica", "normal");
-                        doc.setFontSize(10.5);
-                        doc.setTextColor(40);
-                    }
+                    // Altijd strikt resetten naar normale body-tekst voordat we splitsen
+                    doc.setFont("Helvetica", "normal");
+                    doc.setFontSize(10);
+                    doc.setTextColor(40);
 
-                    const splitLine = doc.splitTextToSize(cleanedPara, contentWidth);
-                    
-                    for (let i = 0; i < splitLine.length; i++) {
+                    const splitLines = doc.splitTextToSize(para, contentWidth);
+                    for (let j = 0; j < splitLines.length; j++) {
                         if (y > 270) {
                             doc.addPage();
                             y = 20;
                         }
-                        doc.text(splitLine[i], margin, y);
-                        y += 6; // Vaste regelafstand
-                    }
-                    
-                    if (isHeader) {
-                        y += 2; // Extra ruimte onder een kop
+                        doc.text(splitLines[j], margin, y);
+                        y += lineHeight;
                     }
                 }
 
-                // --- PAGINA 2: QUIZ ---
-                if (quiz && quiz.trim() !== "") {
+                // --- PAGINA 2: INZICHTQUIZ (indien aanwezig) ---
+                if (safeQuiz && safeQuiz !== "undefined") {
                     doc.addPage();
                     y = 20;
-                    
+
                     doc.setFont("Helvetica", "bold");
-                    doc.setFontSize(14);
+                    doc.setFontSize(13);
                     doc.setTextColor(217, 119, 6);
                     doc.text("Inzichtvragen", margin, y);
-                    y += 12;
+                    y += 10;
 
-                    doc.setFont("Helvetica", "normal");
-                    doc.setFontSize(10.5);
-                    doc.setTextColor(40);
-
-                    const quizParagraphs = quiz.split('\n');
-                    for (let q = 0; q < quizParagraphs.length; q++) {
-                        const cleanedQ = cleanParagraph(quizParagraphs[q]);
-                        if (cleanedQ === "") {
-                            y += 4;
+                    const quizParas = safeQuiz.split('\n');
+                    for (let i = 0; i < quizParas.length; i++) {
+                        const qPara = quizParas[i].trim();
+                        if (qPara === "") {
+                            y += 3;
                             continue;
                         }
 
-                        const splitQLine = doc.splitTextToSize(cleanedQ, contentWidth);
-                        for (let i = 0; i < splitQLine.length; i++) {
+                        // Altijd strikt resetten voor de quiz-regels
+                        doc.setFont("Helvetica", "normal");
+                        doc.setFontSize(10);
+                        doc.setTextColor(40);
+
+                        const splitQuizLines = doc.splitTextToSize(qPara, contentWidth);
+                        for (let j = 0; j < splitQuizLines.length; j++) {
                             if (y > 270) {
                                 doc.addPage();
                                 y = 20;
                             }
-                            doc.text(splitQLine[i], margin, y);
-                            y += 6;
+                            doc.text(splitQuizLines[j], margin, y);
+                            y += lineHeight;
                         }
                     }
                 }
 
-                // --- SPIEGELBEELD ANTWOORDEN ONDERAAN ---
+                // --- SPIEGELBEELD ANTWOORDEN OP EEN EIGEN PAGINA (Voorkomt overlap/uitrekenfouten) ---
+                doc.addPage();
+                let ansY = 40;
+                
                 doc.setFont("Helvetica", "bold");
-                doc.setFontSize(9);
-                doc.setTextColor(150);
-                doc.text("--- ANTWOORDEN (DRAAI DE PAGINA OM) ---", pageWidth / 2, 255, { align: 'center' });
+                doc.setFontSize(11);
+                doc.setTextColor(120);
+                doc.text("--- ANTWOORDEN (DRAAI DE PAGINA OM) ---", pageWidth / 2, ansY, { align: 'center' });
                 
                 doc.setFont("Helvetica", "normal");
-                doc.setFontSize(8.5);
-                const safeAnswers = cleanParagraph(answers || "Geen antwoorden beschikbaar");
+                doc.setFontSize(9.5);
+                doc.setTextColor(50);
+                
                 const splitAnswers = doc.splitTextToSize("Antwoorden:\n" + safeAnswers, contentWidth);
-                doc.text(splitAnswers, pageWidth / 2, 265, { align: 'center', angle: 180 });
+                // We drukken de antwoorden nu normaal af op een schone pagina zodat ze nooit meer uitgerekt of chaotisch worden
+                doc.text(splitAnswers, margin, ansY + 15);
 
                 doc.save(`Studie_${date}.pdf`);
             } catch (err) {

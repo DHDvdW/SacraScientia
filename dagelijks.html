@@ -139,7 +139,7 @@
                 const textHtml = data.text ? data.text.split('\n').map(p => `<p>${p}</p>`).join('') : '<p>Geen tekst gevonden.</p>';
                 
                 let quizHtml = "";
-                if (data.quiz) {
+                if (data.quiz && data.quiz.trim() !== "") {
                     quizHtml = `
                         <div class="quiz-section">
                             <h3>Inzichtquiz</h3>
@@ -149,7 +149,7 @@
                     quizHtml = `
                         <div class="quiz-section">
                             <h3>Inzichtquiz</h3>
-                            <p style="color: var(--text-muted);">Voor deze studie is nog geen quiz gegenereerd.</p>
+                            <p style="color: var(--text-muted);">Voor deze studie is geen quiz beschikbaar in het brondocument.</p>
                         </div>`;
                 }
 
@@ -171,10 +171,11 @@
                 container.innerHTML = '<p style="text-align: center; color: var(--text-muted);">De studie voor vandaag kon niet worden geladen. Controleer of de map "studies" op GitHub bestaat.</p>';
             }
         }
-function generatePDF(date, text, quiz, answers) {
+
+        function generatePDF(date, text, quiz, answers) {
             try {
                 const { jsPDF } = window.jspdf;
-                const doc = new jsPDF({ unit: 'mm', format: 'a4', putOnlyUsedFonts: true, floatPrecision: 2 });
+                const doc = new jsPDF({ unit: 'mm', format: 'a4' });
                 
                 let y = 20;
                 const margin = 18;
@@ -182,20 +183,19 @@ function generatePDF(date, text, quiz, answers) {
                 const contentWidth = pageWidth - (margin * 2);
                 const lineHeight = 5.5;
 
-                // Radicalere opschoning: verwijdert alle dubbele spaties, regeleinde-breuken en opmaakrestanten
-                function cleanTextForPDF(str) {
+                function sanitizeText(str) {
                     if (!str) return "";
                     return str
-                        .replace(/\*/g, "")                          // Verwijder sterretjes
-                        .replace(/[^\x00-\x7F\u00A0-\u00FF\u0100-\u017F]/g, " ") // Vervang rare tekens
-                        .replace(/[ \t]+/g, " ")                     // Dwing exact één spatie af tussen woorden (voorkomt uitrekenfouten)
+                        .replace(/\*/g, "")
+                        .replace(/[^\x00-\x7F\u00A0-\u00FF\u0100-\u017F]/g, " ")
+                        .replace(/[ \t]{2,}/g, " ")
                         .replace(/\r/g, "")
                         .trim();
                 }
 
-                const cleanContent = cleanTextForPDF(text);
-                const cleanQuizContent = cleanTextForPDF(quiz);
-                const cleanAnswersContent = cleanTextForPDF(answers && answers !== "undefined" ? answers : "Geen antwoorden beschikbaar.");
+                const cleanText = sanitizeText(text);
+                const cleanQuiz = sanitizeText(quiz);
+                const cleanAnswers = sanitizeText(answers && answers !== "undefined" ? answers : "Geen antwoorden beschikbaar.");
 
                 // --- PAGINA 1: KOPTEKST & HOOFDTEKST ---
                 doc.setFont("Helvetica", "bold");
@@ -207,51 +207,29 @@ function generatePDF(date, text, quiz, answers) {
                 doc.setFontSize(9);
                 doc.setTextColor(100);
                 doc.text("Gepubliceerd op: " + date, margin, y + 5);
-                y += 15;
+                y += 14;
 
-                // We brekken de tekst op in alinea's via echte regeleinden
-                const rawParagraphs = text.split('\n');
-                
-                doc.setFont("Helvetica", "normal");
-                doc.setFontSize(9.5);
-                doc.setTextColor(40);
+                const paragraphs = cleanText.split('\n').map(p => p.trim()).filter(p => p !== "");
 
-                for (let i = 0; i < rawParagraphs.length; i++) {
-                    const para = cleanTextForPDF(rawParagraphs[i]);
-                    if (para === "") {
-                        y += 3; // Witregel
-                        continue;
-                    }
+                for (let i = 0; i < paragraphs.length; i++) {
+                    doc.setFont("Helvetica", "normal");
+                    doc.setFontSize(9.5);
+                    doc.setTextColor(40);
 
-                    // Controleer of het een titel of bijbelvers is (korte regel)
-                    const isHeading = para.length < 70 && !para.endsWith('.');
-                    if (isHeading) {
-                        doc.setFont("Helvetica", "bold");
-                        doc.setFontSize(10.5);
-                        doc.setTextColor(217, 119, 6);
-                        y += 2;
-                    } else {
-                        doc.setFont("Helvetica", "normal");
-                        doc.setFontSize(9.5);
-                        doc.setTextColor(40);
-                    }
-
-                    // Gebruik dwingende links-uitlijning via opties om uitrekken te voorkomen
-                    const splitLines = doc.splitTextToSize(para, contentWidth);
+                    const splitLines = doc.splitTextToSize(paragraphs[i], contentWidth);
                     for (let j = 0; j < splitLines.length; j++) {
                         if (y > 270) {
                             doc.addPage();
                             y = 20;
                         }
-                        // Cruciaal: { align: 'left' } voorkomt dat jsPDF de regels uitrekt over de breedte!
                         doc.text(splitLines[j], margin, y, { align: 'left' });
                         y += lineHeight;
                     }
-                    if (isHeading) y += 2;
+                    y += 3;
                 }
 
                 // --- PAGINA 2: QUIZ (indien aanwezig) ---
-                if (cleanQuizContent) {
+                if (cleanQuiz) {
                     doc.addPage();
                     y = 20;
 
@@ -261,19 +239,14 @@ function generatePDF(date, text, quiz, answers) {
                     doc.text("Inzichtvragen", margin, y);
                     y += 10;
 
-                    const quizLines = cleanQuizContent.split('\n');
-                    doc.setFont("Helvetica", "normal");
-                    doc.setFontSize(9.5);
-                    doc.setTextColor(40);
+                    const quizParas = cleanQuiz.split('\n').map(p => p.trim()).filter(p => p !== "");
+                    
+                    for (let i = 0; i < quizParas.length; i++) {
+                        doc.setFont("Helvetica", "normal");
+                        doc.setFontSize(9.5);
+                        doc.setTextColor(40);
 
-                    for (let i = 0; i < quizLines.length; i++) {
-                        const qLine = cleanTextForPDF(quizLines[i]);
-                        if (qLine === "") {
-                            y += 3;
-                            continue;
-                        }
-
-                        const splitQuizLines = doc.splitTextToSize(qLine, contentWidth);
+                        const splitQuizLines = doc.splitTextToSize(quizParas[i], contentWidth);
                         for (let j = 0; j < splitQuizLines.length; j++) {
                             if (y > 270) {
                                 doc.addPage();
@@ -282,10 +255,11 @@ function generatePDF(date, text, quiz, answers) {
                             doc.text(splitQuizLines[j], margin, y, { align: 'left' });
                             y += lineHeight;
                         }
+                        y += 2;
                     }
                 }
 
-                // --- PAGINA 3: ANTWOORDEN (Op een eigen, strakke pagina) ---
+                // --- PAGINA 3: SPIEGELBEELD ANTWOORDEN ---
                 doc.addPage();
                 let ansY = 30;
 
@@ -301,6 +275,10 @@ function generatePDF(date, text, quiz, answers) {
 
                 const splitAnswers = doc.splitTextToSize(cleanAnswers, contentWidth);
                 for (let k = 0; k < splitAnswers.length; k++) {
+                    if (ansY > 270) {
+                        doc.addPage();
+                        ansY = 20;
+                    }
                     doc.text(splitAnswers[k], margin, ansY, { align: 'left' });
                     ansY += lineHeight;
                 }
@@ -310,6 +288,7 @@ function generatePDF(date, text, quiz, answers) {
                 alert("Fout bij genereren PDF: " + err.message);
             }
         }
+
         loadDailyStudyPage();
     </script>
 </body>
